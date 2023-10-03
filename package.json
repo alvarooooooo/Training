@@ -1,0 +1,19 @@
+{
+  "name": "ts_react",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "showArray": "ts-node formacion_ts_react.ts",
+    "calculator": "ts-node ./Desde_0/calculator.ts",
+    "run:multiplier": "ts-node ./Desde_0/multiplier.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
