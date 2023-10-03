@@ -8,6 +8,11 @@
  *  1. Añadir en package-json bajo scripts lo que voy a ejecutar <ejecutar>
  *  2. Abrir Terminal
  *  $ npm run "<ejecutar>"
+ * 
+ *  Para git
+ *  $ git init
+ *  $ git add .
+ *  $ git commit -m "msg"
  */
 
 /****************************************************************************
