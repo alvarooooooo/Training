@@ -13,6 +13,7 @@
  *  $ git init
  *  $ git add .
  *  $ git commit -m "msg"
+ *  $ git remote set-url origin https://user:token@github.com/user//repo.git
  */
 
 /****************************************************************************
