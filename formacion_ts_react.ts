@@ -125,7 +125,7 @@ const minMax = (numbers: number[]): [number,number] => {
  */
 
 // Fisher-Yates Sorting Algorithm
-const shuffle = (arr: string[]) => {
+const shuffle = <T>(arr: T[]) => {
     for(let i = arr.length - 1; i > 0; --i){
         const j = Math.floor(Math.random() * (i + 1));
         [arr[i], arr[j]] = [arr[j], arr[i]]
@@ -138,8 +138,8 @@ const shuffle = (arr: string[]) => {
 // Muestro resultados
 const showArray = (arr: number[]) => {
     console.log(arr)
-    //implementar shuffle
-    console.log(minMax(arr))
+    const arr2 = shuffle(arr);
+    console.log(minMax(arr2))
 }
 
 showArray(rangeArray(cleanArgs))
