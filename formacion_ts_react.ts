@@ -164,10 +164,72 @@ const shuffle = <T>([...arr]: T[]) => {
 
 /**
  *  1. (Map) Crea una funcion que, dada una lista de numeros y un numero N, devuelva la lista de numeros multiplicados por N
+ *  @param arr
+ *  @param n
  */
 const multiply = (arr: number[], n: number): number[] => {
     return arr.map((x) => x*n);
 }
+
+/**
+ *  2. (Map) Crea una funcion que, dada una lista de strings, devuelva una lista de strings en mayusculas
+ *  Si no es string lanzamos error???
+ *  @param arr
+ */
+const toUpper = (arr: string[]): string[] => {
+    return arr.map((str) => str.toUpperCase())
+}
+
+/**
+ * 3. (Filter) Crea una funcion que, dada una lista de numeros, devuelva una lista con los numeros pares
+ * No hace falta usar ... spread operator porque map y filter crean copias
+ * @param arr
+ */
+const onlyEven = (arr: number[]): number[] => {
+    return arr.filter((n) => (n%2 === 0))
+}
+
+/**
+ * 4. (Filter) Crea una funcion que, dada una lista de strings, devuelva una lista con los strings que
+ * tengan mas de 5 caracteres
+ * @param arr
+ */
+const bigWords = (arr: string[]): string[] => {
+    return arr.filter((str) => (str.length > 5))
+}
+
+/**
+ * 5. (Reduce) Crea una funcion que, dada una lista de numeros, devuelva la suma de todos los numeros
+ * @param arr
+ * Similar a reduce de OMP???
+ */
+const sum = (arr: number[]): number => {
+    const initialValue = 0
+    return arr.reduce((accumulator, currentValue) => accumulator + currentValue,initialValue)
+}
+
+/**
+ * 6. (Reduce) Crea una funcion que, dada una lista de strings, devuelva un string con todos los strings concatenados
+ * @param arr
+ * Similar a 5. pero initial value debe ser logicamente ""
+ */
+const unifyStrings = (arr: string[]): string => {
+    const initialvalue = ""
+    return arr.reduce((accumulator, currentValue) => accumulator + currentValue, initialvalue)
+}
+
+/**
+ * 7. (Reduce) Crea una funcion que, dada una lista de numeros, encuentre el numero mas grande
+ * @param arr
+ * Dos return creo que no es buena práctica, REVISAR
+ */
+const maxNum = (arr: number[]): number => {
+    const initialvalue = 0
+    return arr.reduce((max, currentValue) => {
+        return(max < currentValue ? currentValue : max)
+    }, arr[0])
+} 
+ 
 
 
 /**
@@ -178,6 +240,11 @@ const showArray = (n: number) => {
     console.log("-------------------------------------------------")
     console.log("|\t\tTABLA DE RESULTADOS\t\t|")
     console.log("-------------------------------------------------")
+    /***************************************************************
+    /* TUPLES VS ARRAYS */
+    console.log("\t\t|TUPLAS VS ARRAYS|")
+    console.log("\t\t------------------")
+
     const arr = rangeArray(n);
     console.log("Array del 0 al %d:",process.argv[2],arr)
     const shuffled_arr = shuffle(arr);
@@ -193,8 +260,21 @@ const showArray = (n: number) => {
     console.log("Type of tuple:", typeof(tuple))
     console.log("Tuple:", tuple)
 
-    // MAP, FILTER, REDUCE
+    /***************************************************************
+    /* MAP, FILTER, REDUCE */
+    console.log("-------------------------------------------------")
+    console.log("\t\t|MAP, FILTER, REDUCE|")
+    console.log("\t\t---------------------")
+
     console.log("Shuffled array times %d:",n,multiply(shuffled_arr,n))
+    const shopping_list = ["cereals", "chicken", "eggs", "rice", "bread"]
+    console.log("Shopping List:",shopping_list)
+    console.log("Shoppig List Upercase:",toUpper(shopping_list))
+    console.log("Even numbers of: ", shuffled_arr, " => ",onlyEven(shuffled_arr))
+    console.log("Shopping List only words with >5 length", bigWords(shopping_list))
+    console.log("Sum of", shuffled_arr, " => ", sum(shuffled_arr))
+    console.log("Unified Shopping List:",unifyStrings(shopping_list))
+    console.log("Max of", shuffled_arr, " => ", maxNum(shuffled_arr))
 }
 
 
