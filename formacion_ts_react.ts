@@ -14,6 +14,18 @@
  *  $ git add .
  *  $ git commit -m "msg"
  *  $ git remote set-url origin https://user:token@github.com/user//repo.git
+ * 
+ *  Todas las mañanas
+ *  $ git checkout main
+ *  $ git pull
+ *  $ git checkout <-b> "mi_rama"
+ *  $ git pull
+ *  $ git rebase origin/main        trae los cambios de main a la rama actual 
+ * 
+ *  Para subir la rama a la nube
+ *  $ git commit -m
+ *  $ git push origin HEAD
+ *  Abrir PR contra main
  */
 
 /****************************************************************************
@@ -137,7 +149,7 @@ const shuffle = <T>(arr: T[]) => {
 
 // Muestro resultados
 const showArray = (arr: number[]) => {
-    console.log(arr)
+    console.warn(arr);
     const arr2 = shuffle(arr);
     console.log(minMax(arr2))
 }
