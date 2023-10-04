@@ -72,7 +72,7 @@ const parseArgs = (args): number => {
     throw new Error('Provided value is not a number')
 }
 
-const cleanArgs = parseArgs(process.argv)
+
 
 /**
  * 2. Crea una funcion que dada una lista de numeros, devuelva una tupla con el minimo
@@ -136,8 +136,12 @@ const minMax = (numbers: number[]): [number,number] => {
  * 
  */
 
-// Fisher-Yates Sorting Algorithm
-const shuffle = <T>(arr: T[]) => {
+
+/** Fisher-Yates Sorting Algorithm
+ *  Recibe como parametro el array a mezclar
+ *  @param arr 
+ */
+const shuffle = <T>([...arr]: T[]) => {
     for(let i = arr.length - 1; i > 0; --i){
         const j = Math.floor(Math.random() * (i + 1));
         [arr[i], arr[j]] = [arr[j], arr[i]]
@@ -145,13 +149,54 @@ const shuffle = <T>(arr: T[]) => {
     return arr
 }
 
+/**
+ *  3. Crea una funcion que dado un array de numeros, devuelva un array de tuplas con el numero y su posicion en la lista
+ *  Recibe como parametro el array a transformar en tupla
+ *  @param arr
+ * 
+ *  Implementado en showArray()
+ *  const tuple: [number, number][] = shuffled_arr.map( (x,it) => [x,it]);  
+ */
 
+/****************************************************************************
+ * MAP, FILTER, REDUCE
+ */
 
-// Muestro resultados
-const showArray = (arr: number[]) => {
-    console.warn(arr);
-    const arr2 = shuffle(arr);
-    console.log(minMax(arr2))
+/**
+ *  1. (Map) Crea una funcion que, dada una lista de numeros y un numero N, devuelva la lista de numeros multiplicados por N
+ */
+const multiply = (arr: number[], n: number): number[] => {
+    return arr.map((x) => x*n);
 }
 
-showArray(rangeArray(cleanArgs))
+
+/**
+ * Función para mostrar resultados, recibe como parámetro un array de números
+ * @param arr 
+ */
+const showArray = (n: number) => {
+    console.log("-------------------------------------------------")
+    console.log("|\t\tTABLA DE RESULTADOS\t\t|")
+    console.log("-------------------------------------------------")
+    const arr = rangeArray(n);
+    console.log("Array del 0 al %d:",process.argv[2],arr)
+    const shuffled_arr = shuffle(arr);
+    console.log("Shuffled array:",shuffled_arr)
+    const [min , max] = minMax(shuffled_arr)
+    console.log("Minimum:", min)
+    console.log("Maximum:", max)
+
+    // Array -> Tuple
+    const tuple: [number, number][] = shuffled_arr.map((x,it) => [x,it]);
+
+    console.log("Type of arr:", typeof(shuffled_arr))
+    console.log("Type of tuple:", typeof(tuple))
+    console.log("Tuple:", tuple)
+
+    // MAP, FILTER, REDUCE
+    console.log("Shuffled array times %d:",n,multiply(shuffled_arr,n))
+}
+
+
+const cleanArgs = parseArgs(process.argv)
+showArray(cleanArgs)
