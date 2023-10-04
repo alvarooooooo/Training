@@ -21,6 +21,11 @@
  *  $ git checkout <-b> "mi_rama"
  *  $ git pull
  *  $ git rebase origin/main        trae los cambios de main a la rama actual 
+ * 
+ *  Para subir la rama a la nube
+ *  $ git commit -m
+ *  $ git push origin HEAD
+ *  Abrir PR contra main
  */
 
 /****************************************************************************
