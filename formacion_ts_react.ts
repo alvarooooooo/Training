@@ -137,7 +137,7 @@ const shuffle = <T>(arr: T[]) => {
 
 // Muestro resultados
 const showArray = (arr: number[]) => {
-    console.log(arr)
+    console.warn(arr);
     const arr2 = shuffle(arr);
     console.log(minMax(arr2))
 }
