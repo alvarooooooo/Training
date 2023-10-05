@@ -155,7 +155,7 @@ const shuffle = <T>([...arr]: T[]) => {
  *  @param arr
  * 
  *  Implementado en showArray()
- *  const tuple: [number, number][] = shuffled_arr.map( (x,it) => [x,it]);  
+ *  const tuple: [number, number][] = shuffledArr.map( (x,it) => [x,it]);  
  */
 
 /****************************************************************************
@@ -214,22 +214,160 @@ const sum = (arr: number[]): number => {
  * Similar a 5. pero initial value debe ser logicamente ""
  */
 const unifyStrings = (arr: string[]): string => {
-    const initialvalue = ""
-    return arr.reduce((accumulator, currentValue) => accumulator + currentValue, initialvalue)
+    const initialValue = ""
+    return arr.reduce((accumulator, currentValue) => accumulator + currentValue, initialValue)
 }
 
 /**
  * 7. (Reduce) Crea una funcion que, dada una lista de numeros, encuentre el numero mas grande
  * @param arr
- * Dos return creo que no es buena práctica, REVISAR
+ *  Dos return 
+ *  
+ *  const maxNum = (arr: number[]): number => {
+ *      const initialValue = arr[0]
+ *      return arr.reduce((max, currentValue) => {
+ *          return (max < currentValue ? currentValue : max)
+ *      }, initialValue)
+ *  }
+ * 
  */
-const maxNum = (arr: number[]): number => {
-    const initialvalue = 0
-    return arr.reduce((max, currentValue) => {
-        return(max < currentValue ? currentValue : max)
-    }, arr[0])
-} 
+const maxNum = (arr: number[]): number => arr.reduce((max, current) => (max < current ? current : max), arr[0])
  
+/**
+ * 8. (Reduce) Crea una funcion que reciba una lista de objetos del tipo {name: string, age: number}
+ * y agrupe los objetos por edad. Por ejemplo, si la lista es
+ * [{name: 'Juan', age: 20}, {name: 'Maria', age: 20}, {name: 'Pedro', age: 30}],
+ * la funcion debe devolver {20: [{name: 'Juan', age: 20}, {name: 'Maria', age: 20}], 30: [{name: 'Pedro', age: 30}]}
+ * @param arr
+ * 
+ *  Para especificar el objeto pasado por parámetro también debemos indicar el nombre de los campos (name y age), no sólo su tipo (string, number)
+ */
+const groupByAge = (arr: {name: string,age: number}[]): { [key: number]: {name: string, age: number}[] } => {
+    const initialValue = {}
+    return arr.reduce((accumulator, person) => {
+        const keyAge = person.age;
+        (accumulator[keyAge] = accumulator[keyAge] || []).push(person) // si es null acumulator[key_age], la crea a vacia []
+        return accumulator
+    },initialValue)
+}
+
+/****************************************************************************
+ * Rest and spread operator
+ * 
+ * > https://www.freecodecamp.org/news/javascript-rest-vs-spread-operators/
+ * > Three dots (...) are used for both the rest and spread operators
+ * > The main difference is that the rest operator puts the rest of some specific user-supplied values into an Array.
+ * > Meanwhile the spread syntax expands iterables into individual elements.
+ * 
+ * > REST operator
+ *      const [firstName, lastName, ...otherInfo] = ["Oluwatobi", "Sofela", "CodeSweetly", "Web Developer", "Male"];
+ * 
+ *      otherInfo contains ["CodeSweetly","Web Develop","Male"]
+ * 
+ * > SPREAD operator
+ *      const myName = "Oluwatobi Sofela"
+ *      
+ *      myName contains ["O", "l", "u", "w", "a", "t", "o", "b", "i", " ", "S", "o", "f", "e", "l", "a"]
+ */
+
+/**
+ * 1. Crea una funcion que, dada una lista de numeros, devuelva el primero
+ * 2. Crea una funcion que, dada una lista de numeros, devuelva todos menos el primero
+ * > Implemento una funcion lambda que devuelva el primer elemento y el resto
+ * @param arr
+ */
+const firstRestNumber = (arr: number[]): {firstNumber: number,restArray: number[]} => {
+    const [first, ...rest] = arr
+    return {firstNumber: first, restArray: rest}
+}
+
+/**
+ * 3. Crea una funcion que, dada una lista de numeros, devuelva una tupla con los dos primeros numeros
+ * @param arr
+ */
+const firstTwoNumber = (arr: number[]): [number,number] => {
+    const [first, second] = arr
+    return [first, second]
+}
+
+/**
+ * 4. Crea una funcion que reciba un numero indeterminado de enteros y devuelva la suma de todos ellos.
+ * Por ejemplo, si la funcion recibe 1, 2, 3, 4, 5, debe devolver 15. Tenga en cuenta que la funcion
+ * no recibe una lista. Ej: sum(1, 2, 3, 4, 5) // 15
+ * @param arr
+ * Otro recurso sería emplear reduce
+ * function sum(...numbers: numbers[]): number {
+ *      return numbers.reduce((acc, number) => acc + number, 0)
+ * }
+ */
+const sumArray = (...arr: number[]): number => {
+    const splitArray = firstRestNumber(arr)
+    if(splitArray.restArray.length===0) { //if empty
+        return splitArray.firstNumber
+    }
+
+    return splitArray.firstNumber + sumArray(...splitArray.restArray) //probando recursividad con spread operator
+}
+
+/**
+ * 5. Crea una funcion que combine dos arrays de numeros en uno solo - Rehazla usando genericos
+ * @param arr1 
+ * @param arr2 
+ */
+const concatArrayNumbers = (arr1: number[], arr2: number[]): number[] => {
+    return [...arr1,...arr2]
+}
+
+const concatArray = <T>(arr1: T[], arr2: T[]): T[] => {
+    return [...arr1,...arr2]
+}
+
+/**
+ * 6. Crea una funcion que combine dos objetos en uno solo. Si ambos objetos tienen la misma propiedad,
+ * el valor del primer objeto debe prevalecer. Ej: combine({a: 1, b: 2}, {b: 3, c: 4}) // {a: 1, b: 2, c: 4}
+ * @param obj1
+ * @param obj2
+ * 
+ * > The spread operator does not clone identical properties!!!
+ * > Suppose you used the spread operator to clone properties from object A into object B. And suppose
+ * object B contains properties identical to those in object A. In such case, B's versions will override those inside A.
+ * 
+ *  const myName = { firstName:"Tobi" , lastName: "Sofela"};
+ *  const bio = {...myName, firstName: "Oluwatobi", website: "codesweetly.com"}
+ * 
+ *  bio contains { firstName: "Oluwatobi", lastName: "Sofela", website: "codesweetly.com"}
+ */
+const combine = (obj1:{}, obj2:{}) => {
+    return {...obj2,...obj1}
+}
+
+/**
+ * 7. Crea una funcion que combine un numero indeterminado de arrays en uno solo.
+ * Ej: combine([1, 2, 3], [4, 5, 6], [7, 8, 9]) // [1, 2, 3, 4, 5, 6, 7, 8, 9]
+ * @param arr
+ */
+const combineArray = (...arr: number[][]): number[] => {
+    return arr.reduce((acc, array) => [...acc, ...array],[])
+}
+
+/**
+ * 8. Crea una funcion que combine un numero indeterminado de objetos en uno solo.
+ * Si ambos objetos tienen la misma propiedad, el valor del primer objeto debe prevalecer.
+ * Ej: combine({a: 1, b: 2}, {b: 3, c: 4}, {c: 5, d: 6}) // {a: 1, b: 2, c: 4, d: 6}
+ * @param obj
+ */
+const combineObj = (...obj: {}[]): {} => {
+    return obj.reduce((acc,obj) => ({...acc,...obj}),{})
+}
+
+/**
+ * 9. Crea una funcion llamada squareAndSum en la que dado un numero indeterminado de numeros,
+ * devuelva la suma de los cuadrados de todos ellos. Ej: squareAndSum(1, 2, 3, 4, 5) // 55. Tip: usa rest operator y reduce
+ * @param
+ */
+function squareAndSum(...num: number[]){
+    return num.reduce((acc,n) => acc + n*n, 0)
+}
 
 
 /**
@@ -247,16 +385,16 @@ const showArray = (n: number) => {
 
     const arr = rangeArray(n);
     console.log("Array del 0 al %d:",process.argv[2],arr)
-    const shuffled_arr = shuffle(arr);
-    console.log("Shuffled array:",shuffled_arr)
-    const [min , max] = minMax(shuffled_arr)
+    const shuffledArr = shuffle(arr);
+    console.log("Shuffled array:",shuffledArr)
+    const [min , max] = minMax(shuffledArr)
     console.log("Minimum:", min)
     console.log("Maximum:", max)
 
     // Array -> Tuple
-    const tuple: [number, number][] = shuffled_arr.map((x,it) => [x,it]);
+    const tuple: [number, number][] = shuffledArr.map((x,it) => [x,it]);
 
-    console.log("Type of arr:", typeof(shuffled_arr))
+    console.log("Type of arr:", typeof(shuffledArr))
     console.log("Type of tuple:", typeof(tuple))
     console.log("Tuple:", tuple)
 
@@ -266,15 +404,33 @@ const showArray = (n: number) => {
     console.log("\t\t|MAP, FILTER, REDUCE|")
     console.log("\t\t---------------------")
 
-    console.log("Shuffled array times %d:",n,multiply(shuffled_arr,n))
-    const shopping_list = ["cereals", "chicken", "eggs", "rice", "bread"]
-    console.log("Shopping List:",shopping_list)
-    console.log("Shoppig List Upercase:",toUpper(shopping_list))
-    console.log("Even numbers of: ", shuffled_arr, " => ",onlyEven(shuffled_arr))
-    console.log("Shopping List only words with >5 length", bigWords(shopping_list))
-    console.log("Sum of", shuffled_arr, " => ", sum(shuffled_arr))
-    console.log("Unified Shopping List:",unifyStrings(shopping_list))
-    console.log("Max of", shuffled_arr, " => ", maxNum(shuffled_arr))
+    console.log("Shuffled array times %d:",n,multiply(shuffledArr,n))
+    const shoppingList = ["cereals", "chicken", "eggs", "rice", "bread"]
+    console.log("Shopping List:",shoppingList)
+    const uppperShoppingList = toUpper(shoppingList)
+    console.log("Shoppig List Upercase:",uppperShoppingList)
+    console.log("Even numbers of: ", shuffledArr, " => ",onlyEven(shuffledArr))
+    console.log("Shopping List only words with >5 length", bigWords(shoppingList))
+    console.log("Sum of", shuffledArr, " => ", sum(shuffledArr))
+    console.log("Unified Shopping List:",unifyStrings(shoppingList))
+    console.log("Max of", shuffledArr, " => ", maxNum(shuffledArr))
+    const people = [{name: 'Juan', age:20},{name: 'Maria', age: 20},{name: 'Pedro', age: 30},{name: 'Luis', age:50}]
+    console.log("List of name and age:", people)
+    console.log("People classified by age:", groupByAge(people))
+
+    /***************************************************************
+    /* Rest and spread operator */
+    console.log("-------------------------------------------------")
+    console.log("\t   |REST AND SPREAD OPERATOR|")
+    console.log("\t   --------------------------")
+    const firstRest = firstRestNumber(shuffledArr)
+    console.log("First number of",shuffledArr," => ",firstRest.firstNumber)
+    console.log("And the rest of elements", firstRest.restArray)
+    console.log("First two numbers of",shuffledArr," => ",firstTwoNumber(shuffledArr))
+    console.log("Sum of", shuffledArr, " => ", sumArray(...shuffledArr))
+    console.log("Concat of", arr, "and", shuffledArr," => ", concatArrayNumbers(arr,shuffledArr))
+    console.log("Concat of",uppperShoppingList,"and",shoppingList," => ", concatArray(uppperShoppingList,shoppingList))
+    //Falta imprimir resultados 6, 7, 8, 9
 }
 
 
