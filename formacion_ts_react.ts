@@ -357,7 +357,7 @@ const combineArray = (...arr: number[][]): number[] => {
  * @param obj
  */
 const combineObj = (...obj: {}[]): {} => {
-    return obj.reduce((acc,obj) => ({...acc,...obj}),{})
+    return obj.reduce((acc,obj) => ({...obj,...acc}),{})
 }
 
 /**
@@ -369,6 +369,247 @@ function squareAndSum(...num: number[]){
     return num.reduce((acc,n) => acc + n*n, 0)
 }
 
+/****************************************************************************
+ * Asincronía Typescript
+ * > https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+ * > Asynchronous programming allows us to perform multiple tasks parallelly
+ * 
+ * ¿Qué es una promesa? ¿Para qué sirve?
+ * > The Promise object represent the eventual completion (or failure) of an asynchronous operation and its resulting value.
+ * > A Promise is a proxy (intermediary) for a value not necessarily known when the promise is created. It allows you to associate handlers with
+ * an asynchronoys action's eventual success value or failure reason. This lets asynchronous methods return values like synchronous methods: instead
+ * of immediately returning the final value, the asynchronous method returns a promise to supply the value at asome point in the future
+ * 
+ * > Promises have the following states:
+ *      --> pending: initial state, neither fulfilled or rejected
+ *      --> fulfilled: meaning that the operation was completed successfully
+ *      --> rejected: meaning that the operation failed
+ * 
+ * > The eventual state of pending promise can either be fulfilled with a value or rejected with a reason (error). When either of these options occur,
+ * the associated handlers queued up by promise's <then> method are called. If the promise has already been fulfilled or rejected when a corresponding handler
+ * is attached, the handler will be called, so there is no race condition between an asynchronous operation completing and its handlers being attached.
+ * 
+ * ¿Qué es un callback?¿Y el callback hell?¿Por qué es un problema?¿Cómo se soluciona?
+ * > https://developer.mozilla.org/en-US/docs/Glossary/Callback_function
+ * > https://www.geeksforgeeks.org/what-to-understand-callback-and-callback-hell-in-javascript/
+ * > A callback function is a function passed into another function as an argument, which is then invoked inside the outer function to complete some kind
+ * of routine or action. They are basically functions that are executed only after a result is produced. Callbacks are an important part of
+ * asynchronous Typescript.
+ * 
+ * > Callback Hell is essentially nested callbacks stacked bellow one another forming a pyramid structure. Every callback depends/waits for
+ * the previous callback, thereby making a pyramid structure that affects the readability and maintainability of the code.
+ * 
+ * > Solutions to callback hell are: using promises and using async/await
+ * 
+ * Then VS async/await
+ * --> then: forma tradicional de trabajar con promesas
+ * --> async/wait: es una forma más moderna de trabajar con promesas
+ * Ejemplo:
+ *      // then
+ *      fetch('https://jsonplaceholder.typicode.com/todos/1')
+ *          .then(response => response.json())
+ *          .then(json => console.log(json))
+ * 
+ *      // async/await
+ *      const response = await fetch('https://jsonplaceholder.typicode.com/todos/1')
+ *      const json = await response.json()
+ *      console.log(json)
+ * 
+ * try/catch - ¿Cómo se utiliza? ¿Para qué sirve? ¿Cómo se combina con async/wait?
+ * > https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch
+ * > The try...catch statement is comprised of a try block and either a catch block, a finally block, or both. The code in the try block is executed first,
+ * and if it throws an exception, the code in the catch block will be executed. The code in the finally block will always be executed before control flow
+ * exits the entire construct
+ * 
+ * Syntax
+ *      try {
+ *          tryStatements
+ *      } catch (exceptionVar) {
+ *          catchStatements
+ *      } finally {
+ *          finallyStatements
+ *      }
+ * 
+ * > Try...catch statement allows you to define a block of code to be tested for exceptions (errors) while it is being executed.
+ * > The async keyboard is used to declare an asynchronous function, which is a function that returns a promise and can be awaited.
+ * > The await keyboard is used inside an asynchronous function to pause the execution of the function until a promise is resolved
+ * > Ejemplo
+ *      try {
+ *          //Si cualquiera de las dos lineas siguientes falla, se ejecuta el catch
+ *          const response = await fetch('https://jsonplaceholder.typicode.com/todos/1')
+ *          const json = await fetch response.json()
+ *          console.log(json)
+ *      } catch (error) {
+ *          console.error(error)
+ *      }
+ * 
+ * Promise.all vs Promise.allSettled vs for await
+ * 
+ *  --> Promise.all: Ejecuta todas las promesas en paralelo y espera a que todas las promesas se resuelvan o se rechacen. Con Promise.all
+ *      si una promesa se rechaza, todas las promesas se rechazan
+ * 
+ *  --> Promise.allSettled: Ejecuta todas las promesas en paralelo y espera a aque todas las promesas se resuelvan o se rechacen. Si una promesa
+ *      se rechaza, las demás se resuelven.
+ * 
+ *  --> for await: ejecuta las promesas en serie. Es decir, ejecuta una promesa, espera a que se resuelva o se rechace, y luego ejecuta la siguiente promesa
+ * 
+ * Tarea: investiga más sobre Promise.all, Promise.allSettled y for await
+ * Promise.all()
+ * > https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
+ * > Is a static method that takes an iterable of promises as input and returns a single Promise. This returned promise fulfills when all of the input's
+ * promises fulfill (including when an empty iterable is passed), with an array of the fulfillment values. It rejects when any of the input's promises rejects,
+ * with this first rejection reason.
+ *      Use:
+ *          const promise1 = Promise.resolve(3)
+ *          const promise2 = 42
+ *          const promise3 = new Promise((resolve, reject) => {
+ *              setTimeout(resolve, 100, 'foo')
+ *          })
+ *          Promise.all([promise1, promise2, promise3]).then((values) => {
+ *              console.log(values)
+ *          })
+ * 
+ *          Expected Output: Array [3, 42, "foo"]
+ * 
+ * Promise.allSettled()
+ * > https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled
+ * > Is a static method that takes an iterable of promises as input and returns a single Promise. This returned promise fulfills when all of the inputs
+ * settle (including when an empty iterable is passed), with an array of objects that describe the outcome of each promise.
+ *      Use:
+ *          const promise1 = Promise.resolve(3)
+ *          const promise2 = new Promise((resolve, reject) => setTimeout(reject, 100, 'foo'))
+ *          const promises = [promise1, promise2]
+ * 
+ *          Promise.allSettled(promises).then((results) => results.forEach((result) => console.log(result.status)))
+ * 
+ *          Expected Output: "fulfilled" "rejected"
+ * 
+ * for await
+ * > https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of
+ * > The for await ... of statement create a loop iterating over async iterable objects as well as sync iterables. This statement can only be used in contexts
+ *  where await can be used, which includes inside an async function body and in a module
+ * 
+ *      Use:
+ *          async function* foo() {
+ *              // The yield keyword pauses generator function execution and the value of the expression following the yield keyword is returned to the 
+ *              //generator's caller. It can be thought of as a generrator-based version of the return keyword
+ *              yield 1;
+ *              yield 2;
+ *          }
+ *          (async function() {
+ *              for await (const num of foo()) {
+ *                  console.log(num);
+ *                  //Expected output: 1
+ * 
+ *                  break; // Closes iterator, triggers return
+ *              }
+ *          })();
+ * 
+ * Tarea: investiga sobre Promise.race
+ * > https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race
+ * > The Promise.race() static method takes an iterable of promises as input and returns a single Promise. This returned promise setttles with the eventual
+ * state of the first promise that settles
+ * 
+ *      Use:
+ *          const promise1 = new Promise((resolve,reject) => {
+ *              setTimeout(resolve, 500, 'one');
+ *          })
+ * 
+ *          const promise2 = new Promise((resolve,reject) => {
+ *              setTimeout(resolve, 100, 'two');
+ *          })
+ * 
+ *          Promise.race([promise1, promise2]).then((value) => {
+ *              console.log(value)
+ *              // Both resolve, but promise2 is faster
+ *          })
+ *          //Expeceted output: "two"
+ */
+
+/**
+ * 1. Crea una funcion que devuelva una promesa que resuelva el string 'Hello World'
+ * 2. Crea una funcion que devuelva una promesa que falle con el error 'Ups! Algo ha fallado'
+ * Define la siguiente funcion fetch "falsa". Esta funcion, de forma aleatoria, resolverá correctamente o cascará error
+ * @param url
+ */
+function fakeFetch(url: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        if (Math.random() > 0.5) {
+            resolve('Hello World')
+        } else {
+            reject('Ups! Algo ha fallado en fakeFetch()')
+        }
+    })
+}
+
+/**
+ * 1. Crea una funcion que llame a fakeFetch y que, si la promesa se resuelve correctamente,
+ * devuelva el string 'Todo ha ido bien'. Si la promesa falla, devolverá el string 'Ups! Algo ha fallado'. 
+ * Esta funcion debe usar then y catch
+ */
+const thenCatchFakeFetch = (): Promise<string> => {
+    return fakeFetch('celtiberian.es').then(() => 'Todo ha ido bien').catch(() => 'Ups! Algo ha fallado') //Si se rechaza devuelve pending?????
+}
+
+/**
+ * 2. Crea una funcion que llame a fakeFetch y que, si la promesa se resuelve correctamente,
+ * devuelva el string 'Todo ha ido bien'. Si la promesa falla, devolverá el string 'Ups! Algo ha fallado'.
+ * Esta funcion debe usar async/await y try/catch
+ */
+const asyncFakeFetch = async (): Promise<string> => {
+    try{
+        await fakeFetch('celtiberian.es')
+        return 'Todo ha ido bien' //porq no devuelve siempre 'Todo ha ido bien'
+    } catch {
+        return 'Ups! Algo ha fallado'
+    }
+}
+
+/**
+ * 3. Crea una funcion que llame a fakeFetch 30 veces. Si alguna de las promesas falla, la funcion debe devolver el string 'Ups! Algo ha fallado'.
+ * (tip: usar Promise.all).
+ */
+async function fakeFetch30(): Promise<string> {
+    //const promises = Array.from({ length: 30 }, () => thenCatchFakeFetch()) // con thenCatchFakeFetch muestra los log en pending??????
+    const promises = Array.from({ length: 30 }, () => fakeFetch('celtiberian.es'))
+    console.log(promises)
+    try{
+        await Promise.all(promises)
+        return 'Todo ha ido bien'
+    } catch {
+        return 'Ups! Algo ha fallado en fakeFetch30()'
+    }
+    //await Promise.all().then((value) => console.log(value),(reason) => console.log(reason)) //NO COMBINAR async/await con THEN !!!!!!!!!!!! 
+}
+
+/**
+ * 4. Crea una funcion que llame a fakeFetch 30 veces. Tras finalizar, la funcion debe devolver un array con
+ * todos los resultados de las promesas. Si alguna falla, no debe parar la ejecución de las demás promesas. (tip: usar Promise.allSettled)
+ */
+async function fakeFetchAllSettled30(): Promise<string[]> {
+    const promises = Array.from({ length: 30 }, () => fakeFetch('celtiberian.es'))
+    const results = await Promise.allSettled(promises)
+    console.log(promises)
+    //return Promise.allSettled(promises).then((results) => results.forEach((result) => (result.status === 'fulfilled' ? 'Todo ha ido bien' : 'Ups! Algo ha fallado'))) //porq no funciona ????
+    return results.map((result) => result.status === 'fulfilled' ? 'Todo ha ido bien' : 'Ups! Algo ha fallado')
+} 
+
+/**
+ * 5. Crea una funcion que llame a fakeFetch 30 veces en serie. Tras finalizar, la funcion debe devolver
+ * un array con todos los resultados de las promesas. Si alguna falla, no debe parar la ejecución de las demás promesas. (tip: usar for await)
+ */
+async function fakeFetchForAwait30(): Promise<string[]> {
+    const results = []
+    for (let i = 0; i < 30; ++i){
+        try {
+            await fakeFetch('celtiberian.es')
+            results.push('Todo ha ido bien')
+        } catch (error) {
+            results.push('Ups! Algo ha fallado')
+        }
+    }
+    return results
+}
 
 /**
  * Función para mostrar resultados, recibe como parámetro un array de números
@@ -430,7 +671,25 @@ const showArray = (n: number) => {
     console.log("Sum of", shuffledArr, " => ", sumArray(...shuffledArr))
     console.log("Concat of", arr, "and", shuffledArr," => ", concatArrayNumbers(arr,shuffledArr))
     console.log("Concat of",uppperShoppingList,"and",shoppingList," => ", concatArray(uppperShoppingList,shoppingList))
-    //Falta imprimir resultados 6, 7, 8, 9
+    const obj1 = {a:1, b:2}
+    const obj2 = {b:3, c:4}
+    console.log("Combine objects",obj1,"with",obj2," => ", combine(obj1,obj2))
+    const arr1 = [1,2,3]
+    const arr2 = [4,5,6]
+    const arr3 = [7,8,9]
+    console.log("Combine",arr1,arr2,arr3," => ",combineArray(arr1,arr2,arr3))
+    const obj3 = {c:5,d:6}
+    console.log("Combine objects",obj1,obj2,obj3," => ",combineObj(obj1,obj2,obj3))
+    console.log("Sum of squares of",shuffledArr," => ",squareAndSum(...shuffledArr))
+
+    /***************************************************************
+    /* Asíncronía */
+    console.log('Fake fetch:',fakeFetch('celtiberian.es'))
+    console.log('Using then and catch',thenCatchFakeFetch())
+    console.log('Using async and wait',asyncFakeFetch())
+    console.log('Fake fetch 30 times Promise.all',fakeFetch30())
+    console.log('Fake fetch 30 times Promise.allSettled',fakeFetchAllSettled30())
+    console.log('Fake fetch 30 times for await',fakeFetchForAwait30())
 }
 
 
