@@ -173,7 +173,6 @@ const multiply = (arr: number[], n: number): number[] => {
 
 /**
  *  2. (Map) Crea una funcion que, dada una lista de strings, devuelva una lista de strings en mayusculas
- *  Si no es string lanzamos error???
  *  @param arr
  */
 const toUpper = (arr: string[]): string[] => {
@@ -548,7 +547,7 @@ function fakeFetch(url: string): Promise<string> {
  * Esta funcion debe usar then y catch
  */
 const thenCatchFakeFetch = (): Promise<string> => {
-    return fakeFetch('celtiberian.es').then(() => 'Todo ha ido bien').catch(() => 'Ups! Algo ha fallado') //Si se rechaza devuelve pending?????
+    return fakeFetch('celtiberian.es').then(() => 'Todo ha ido bien then').catch(() => 'Ups! Algo ha fallado')
 }
 
 /**
@@ -559,7 +558,7 @@ const thenCatchFakeFetch = (): Promise<string> => {
 const asyncFakeFetch = async (): Promise<string> => {
     try{
         await fakeFetch('celtiberian.es')
-        return 'Todo ha ido bien' //porq no devuelve siempre 'Todo ha ido bien'
+        return 'Todo ha ido bien'
     } catch {
         return 'Ups! Algo ha fallado'
     }
@@ -570,9 +569,8 @@ const asyncFakeFetch = async (): Promise<string> => {
  * (tip: usar Promise.all).
  */
 async function fakeFetch30(): Promise<string> {
-    //const promises = Array.from({ length: 30 }, () => thenCatchFakeFetch()) // con thenCatchFakeFetch muestra los log en pending??????
     const promises = Array.from({ length: 30 }, () => fakeFetch('celtiberian.es'))
-    console.log(promises)
+    //console.log(promises)
     try{
         await Promise.all(promises)
         return 'Todo ha ido bien'
@@ -586,12 +584,13 @@ async function fakeFetch30(): Promise<string> {
  * 4. Crea una funcion que llame a fakeFetch 30 veces. Tras finalizar, la funcion debe devolver un array con
  * todos los resultados de las promesas. Si alguna falla, no debe parar la ejecución de las demás promesas. (tip: usar Promise.allSettled)
  */
-async function fakeFetchAllSettled30(): Promise<string[]> {
+async function fakeFetchAllSettled30() {
     const promises = Array.from({ length: 30 }, () => fakeFetch('celtiberian.es'))
     const results = await Promise.allSettled(promises)
-    console.log(promises)
-    //return Promise.allSettled(promises).then((results) => results.forEach((result) => (result.status === 'fulfilled' ? 'Todo ha ido bien' : 'Ups! Algo ha fallado'))) //porq no funciona ????
+    //console.log(promises)
+    //return Promise.allSettled(promises).then((results) => results.forEach((result) => (result.status === 'fulfilled' ? 'Todo ha ido bien' : 'Ups! Algo ha fallado'))) //forEach ejecuta no devuelve
     return results.map((result) => result.status === 'fulfilled' ? 'Todo ha ido bien' : 'Ups! Algo ha fallado')
+    //return results.map(r => console.log(r.status))
 } 
 
 /**
@@ -615,7 +614,7 @@ async function fakeFetchForAwait30(): Promise<string[]> {
  * Función para mostrar resultados, recibe como parámetro un array de números
  * @param arr 
  */
-const showArray = (n: number) => {
+const showArray = async (n: number) => {
     console.log("-------------------------------------------------")
     console.log("|\t\tTABLA DE RESULTADOS\t\t|")
     console.log("-------------------------------------------------")
@@ -685,11 +684,11 @@ const showArray = (n: number) => {
     /***************************************************************
     /* Asíncronía */
     console.log('Fake fetch:',fakeFetch('celtiberian.es'))
-    console.log('Using then and catch',thenCatchFakeFetch())
-    console.log('Using async and wait',asyncFakeFetch())
-    console.log('Fake fetch 30 times Promise.all',fakeFetch30())
-    console.log('Fake fetch 30 times Promise.allSettled',fakeFetchAllSettled30())
-    console.log('Fake fetch 30 times for await',fakeFetchForAwait30())
+    console.log('Using then and catch:',await thenCatchFakeFetch())
+    console.log('Using async and wait:',await asyncFakeFetch())
+    console.log('Fake fetch 30 times Promise.all:', await fakeFetch30())
+    console.log('Fake fetch 30 times Promise.allSettled:',await fakeFetchAllSettled30())
+    //console.log('Fake fetch 30 times for await:',await fakeFetchForAwait30())
 }
 
 

@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "target": "es2021", // --> añadir para Promise.any()
         "noImplicitAny": false
     }
 }
