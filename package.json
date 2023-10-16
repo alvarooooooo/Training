@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "showArray": "ts-node formacion_ts_react.ts",
+    "showArray": "ts-node formacionTsReact.ts",
     "calculator": "ts-node ./Desde_0/calculator.ts",
     "run:multiplier": "ts-node ./Desde_0/multiplier.ts",
     "test": "echo \"Error: no test specified\" && exit 1"

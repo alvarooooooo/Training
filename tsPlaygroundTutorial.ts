@@ -328,7 +328,7 @@ const returnPromise = new Promise((resolve,reject) => {
 
 /**
  * RETHROWING
- * .catch at the end of the chain is similar to try..catch. We may have as manu .then handlers
+ * .catch at the end of the chain is similar to try..catch. We may have as many .then handlers
  * as we want, and then use a single .catch at the end to handle errors in all of them
  * 
  * In a regular try..catch we can analyze the error and maybe rethrow it if it can't be handled
@@ -728,3 +728,273 @@ Promise.resolve()
  * queue
  * Normally, if we expect an error, we add .catch to the promise chain to handle it
  */
+let promise4 = Promise.reject(new Error("Promise Failed!"))
+setTimeout(() => promise.catch(err => alert('caught')), 1000)
+
+// Error: Promise Failed!
+window.addEventListener('unhandledrejection', event => alert(event.reason))
+
+/**
+ * If we run we we'll see "Promise Failed!" first and then "caught".
+ */
+
+/**
+ * Summary
+ * > Promise handling is always asynchronous, as all promise actions pass through the internal
+ * "prmoise jobs" queue, also called "microtask queue" (V8 term)
+ * 
+ * > So then/catch/finally handlers are always called after the current code is finished
+ * 
+ * > If we need to guarantee that a piece of code is executed after then/catch/finally, we can
+ * add it into a chainged ".then" call
+ */
+
+
+/**
+ * ASYNC/AWAIT
+ * 
+ * Async functions
+ * The word "async" before a function means one simple thing: a function always returns
+ * a promise. Other values are wrapped in a resolved promise automatically
+ */
+async function f() {
+    return 1
+}
+
+f().then(alert) // 1
+
+/**
+ * ...We could explicitly return a promise, which would be the same
+ */
+async function f1() {
+    return Promise.resolve(1)
+}
+f1().then(alert) // 1
+
+/**
+ * Await
+ * Only works inside async functions!!
+ * The keyword "await" makes JS wait until that promise settles and returns its result
+ */
+async function f2(){
+    let promise = new Promise((resolve,reject) => {
+        setTimeout(() => resolve("done!"), 1000)
+    })
+
+    let result = await promise // wait until the promise resolves (*)
+
+    alert(result) // "done!"
+}
+
+f2()
+/**
+ * The function execution "pauses" at the line (*) and resumes when the promise settles,
+ * with result becoming its result. So the code above shows "done!" in one second
+ * 
+ * Let's emphasize: "await" literally suspends the function execution until the promise
+ * settles, and then resumes it with the promise result. That doesn't cost any CPU resources,
+ * because the JS engine can do other jobs
+ * 
+ * It's just a more elegant syntax of getting the promise result thn promise.then. And, it's
+ * easir to read and write
+ * 
+ * Can't use await in regular functions!!
+ */
+async function showAvatar() {
+
+    // read our JSON
+    let response = await fetch('/article/promise-chaining/user.json')
+    let user = await response.json()
+
+    // read github user
+    let githubResponse = await fetch(`https://api.github.com/users/${user.name}`)
+    let githubUser = await githubResponse.json()
+
+    // show the avatar
+    let img = document.createElement('img')
+    img.src = githubUser.avatar_url
+    img.className = "promise-avatar-example"
+    document.body.append(img)
+
+    // wait 3 seconds
+    await new Promise((resolve, reject) => setTimeout(resolve, 3000))
+
+    img.remove()
+    
+    return githubUser
+}
+
+showAvatar();
+
+/**
+ * Modern browsers allow top-level await in modules
+ * In modern browsers, await on top level works just fine
+ * 
+ *      // we assume this code runs at top level, inside a module
+ *      let response = await fetch('/article/promise-chaining/user.json')
+ *      let user = await response.json()
+ * 
+ *      console.log(user)
+ * 
+ * If we're not using modules, or older browsers must be supported, we wrap it into
+ * an anonymous async function
+ */
+(async () => {
+    let response = await fetch('/article/promise-chaining/user.json')
+    let user = await response.json()
+})()
+
+/**
+ * Await accepts "thenables"
+ * Like promise.then, await allows us to use thenable objects (those with a callable
+ * "then" method). The idea is that a third-party object may not be a promise, but a
+ * promise-compatible: if it supports .then, that's enough to use it with await
+ */
+type Resolve<T> = (v: T) => void
+type Reject = (e: Error) => void
+
+class Thenable {
+    num: number
+
+    constructor(num: number) {
+        this.num = num
+    }
+
+    then(resolve: Resolve<number>, reject: Reject): Promise<number> | void {
+        alert(resolve)
+        // resolve with this.num*2 after 1000ms
+        setTimeout(() => resolve(this.num * 2), 1000) // (*)
+    }
+
+    
+}
+
+async function f3() {
+    // waits for 1 second, then resul becomes 14
+    let result = await new Thenable(7)
+    alert(result)
+    /*
+    (async () => {
+        const result = await new Thenable(7)
+        alert(result)
+    })*/
+    
+}
+
+
+f3()
+
+/**
+ * ERROR HANDLING
+ * If a promise resolves normally, then await promise returns the result. But in the case
+ * of a rejection, it throws the error, just as if there were a throw statement at that
+ * at line
+ */
+async function f4() {
+    await Promise.reject(new Error("Whoops!"))
+}
+// ...is the same as this
+async function f5(){
+    throw new Error("Whoops!")
+}
+/**
+ * In real situations, the promise may take some time before it rejects. In that case there
+ * will be a delay before await throws an error.
+ * We can catch that error using try..catch, the same way as a regular throw
+ */
+async function f6(){
+    try {
+        const response = await fetch('http://no-such-url')
+    } catch(err) {
+        alert(err) // TypeError: failed
+    }
+}
+
+f6()
+
+// In the case of an error, the control jumpts to the catch block. We can also wrap multiple lines:
+async function f7(){
+    try {
+        const response = await fetch('/no-user-here')
+        const user = await response.json()
+    } catch(err) {
+        // catches errors both in fetch and response.json
+        alert(err)
+    }
+}
+
+f7()
+
+/**
+ * If we don't have try..catch, then the promise generated by the call of th async function
+ * f7() becomes rejected, We can append .catch to handle it
+ */
+async function f8(){
+    const response = await fetch('http://no-such-url')
+}
+
+// f8() becomes a rejected promise
+f8().catch(alert) // TypeError: failed to fetch (*)
+
+/**
+ * Async/await and promise.then/catch
+ * When we use async/await, we rarly need .then, because await handles the waiting for us.
+ * And we can use a regular try..catch instead of .catch. That's usually (but not always)
+ * more convenient.
+ * 
+ * But at the top level of the code, when we're outside any async function, we're
+ * syntacticaly unable to use await, so it's a normal practice to add .then/catch to handle
+ * the final result or falling-thorugh error, like in the line (*) of the example
+ * above.
+ */
+
+/**
+ * SUMMARY
+ * The "async" keyword before a function has two effects
+ *      -> Make it always return a promise 
+ *      -> Allows await to be used in it
+ * 
+ * The "await" keyboard before a promise makes JS wait until that promise settles and then:
+ *      -> If it's an error, an exception is generated - same as if throw error were called
+ *      at that very place
+ *      -> Otherwise, it returns the result
+ */
+
+/**
+ * Rewrite using async/await
+ * 
+ *      function loadJson(url) {
+ *          return fetch(url)
+ *              .then(response => {
+ *                  if (response.status == 200) {
+ *                      return response.json()
+ *                  } else {
+ *                      throw new Error(response.status)
+ *                  }
+ *              })
+ *      }
+ *  
+ *      loadJson('https://javascript.info/no-such-user.json').catch(alert) // Error: 404
+ */
+const loadJson2 = async (url: string) => {
+    try{
+        const response = await fetch(url)
+        if (response.status === 200) {
+            return await response.json()
+        } else {
+            throw new Error(response.statusText)
+        }
+    } catch(err) {
+        console.log(err)
+    }
+}
+//Forma 1: con then y catch
+loadJson2('https://jsonplaceholder.typicode.com/todos/1')
+    .then(data => console.log(data))
+    .catch(error => console.log(error));
+
+//Froma 2: con await y IIFE
+(async () => {
+    const data = await loadJson2('https://jsonplaceholder.typicode.com/todos/1')
+    console.log(data)
+})();
