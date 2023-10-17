@@ -1054,21 +1054,20 @@ class HttpError extends Error {
 }
 
 const loadJson3 = async (url: string) => {
-    try {
-        const response = await fetch(url)
-        if (response.status == 200) {
-            return await response.json()
-        } else {
-            throw new HttpError(response)
-        }
-    } catch (err) {
-        console.log(err)
+
+    const response = await fetch(url)
+    if (response.status == 200) {
+        return await response.json()
+    } else {
+        throw new HttpError(response)
     }
+
 }
 
 // Ask for a username until github returns a valid user
-async function demoGithubUser() {
-    let name = prompt("Enter a name?", "iliakan")
+async function demoGithubUser(attempts: number = 0) {
+
+    const name = prompt("Enter a name?", "iliakan")
 
     try {
         const data = await loadJson3(`https://api.github.com/users/${name}`)
@@ -1077,7 +1076,15 @@ async function demoGithubUser() {
     } catch (err: any) {
         if (err instanceof HttpError && err.response.status === 404) {
             console.log('No such user, please reenter');
-            await demoGithubUser() // revisar
+            ++attempts;
+            // maximo 3 intentos
+            if(attempts >= 3) {
+                alert("Maximum number of attempts")
+
+            } else {
+                await demoGithubUser(attempts)
+            }
+            
         } else {
             throw err
         }
