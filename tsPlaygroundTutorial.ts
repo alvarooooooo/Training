@@ -998,3 +998,138 @@ loadJson2('https://jsonplaceholder.typicode.com/todos/1')
     const data = await loadJson2('https://jsonplaceholder.typicode.com/todos/1')
     console.log(data)
 })();
+
+/**
+ * Rewrite rethrow with async/await
+ * 
+ *      class HttpError extends Error {
+ *          constructor(response) {
+ *              super(`${response.status} for ${response.url}`)
+ *              this.name = 'HttpError'´
+ *              this.response = response
+ *          }
+ *      }
+ * 
+ *      function loadJson(url) {
+ *          return fetch(url)
+ *              .then(response => {
+ *              if (response.status === 200) {
+ *                  return response.json()
+ *              } else {
+ *                  throw new HttpError(response)
+ *              }
+ *          })
+ *      }
+ * 
+ *      // Ask for a username until github return a valid user
+ *      function demoGithubUser() {
+ *          let name = prompt("Enter a name?", "iliakan")
+ *  
+ *          return loadJson(`https://api.github.com/users/${name}`)
+ *              .then(user => {
+ *                  alert(`Full name: ${user.name}.`)
+ *                  return user
+ *              })
+ *              .catch(err => {
+ *                  if (err instanceof HttpError && err.response.status === 404) {
+ *                      alert("No such user, please reenter.")  
+ *                      return demoGithubUser()
+ *                  } else {
+ *                      throw err
+ *                  }
+ *              })
+ *      }
+ *      
+ *      demoGithubUser()
+ */
+class HttpError extends Error {
+    name: string
+    response: Response 
+
+    constructor(response: Response) {
+        super(`${response.status} for ${response.url}`)
+        this.name = 'HttpError'
+        this.response = response
+    }
+}
+
+const loadJson3 = async (url: string) => {
+    try {
+        const response = await fetch(url)
+        if (response.status == 200) {
+            return await response.json()
+        } else {
+            throw new HttpError(response)
+        }
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+// Ask for a username until github returns a valid user
+async function demoGithubUser() {
+    let name = prompt("Enter a name?", "iliakan")
+
+    try {
+        const data = await loadJson3(`https://api.github.com/users/${name}`)
+        console.log(`Full name: ${data.name}`)
+        return data
+    } catch (err: any) {
+        if (err instanceof HttpError && err.response.status === 404) {
+            console.log('No such user, please reenter');
+            await demoGithubUser() // revisar
+        } else {
+            throw err
+        }
+    }
+}
+
+//IIFE
+(async () => {
+    const data = await demoGithubUser()
+    console.log(data)
+})()
+
+
+/**
+ * Iteradores y función generadora
+ */
+const step = function* (x: number = 0) {
+    yield 1
+    yield 2
+
+    while (true) {
+        x+=1
+        yield x
+        if (x === 10) {
+            return 100
+        }
+    }
+}
+
+const cursor = step()
+
+console.log(cursor.next())
+
+for (let n of cursor){
+    console.log(n)
+}
+
+/**
+ * OR ||
+ */
+const t = (y: string | undefined) => {
+    let txt: string = y || "titulo"
+    return txt
+}
+console.log("Operador OR: " + t(""))
+
+/**
+ * Operador de coalescencia nula ??
+ */
+const z = (y: string | undefined) => {
+    let txt: string = y ?? "titulo"
+    return txt
+}
+
+console.log("Operador ??: " + z(""))

@@ -595,7 +595,6 @@ async function fakeFetch30(): Promise<string> {
 async function fakeFetchAllSettled30() {
     const promises = Array.from({ length: 30 }, () => fakeFetch('celtiberian.es'))
     const results = await Promise.allSettled(promises)
-    //console.log(promises)
     //return Promise.allSettled(promises).then((results) => results.forEach((result) => (result.status === 'fulfilled' ? 'Todo ha ido bien' : 'Ups! Algo ha fallado'))) //forEach ejecuta no devuelve
     return results.map((result) => result.status === 'fulfilled' ? 'Todo ha ido bien' : 'Ups! Algo ha fallado')
     //return results.map(r => console.log(r.status))
@@ -691,12 +690,22 @@ const showArray = async (n: number) => {
 
     /***************************************************************
     /* Asíncronía */
-    console.log('Fake fetch:',fakeFetch('celtiberian.es'))
+    console.log("-------------------------------------------------")
+    console.log("\t\t  |Asynchrony|")
+    console.log("\t\t  ------------")
+
+    //console.log('Fake fetch:',fakeFetch('celtiberian.es')) // Unhandled Error
+    try {
+        const msg = await fakeFetch('celtiberian.es')
+        console.log(msg)
+    } catch (err) {
+        console.error(err)
+    }
     console.log('Using then and catch:',await thenCatchFakeFetch())
     console.log('Using async and wait:',await asyncFakeFetch())
     console.log('Fake fetch 30 times Promise.all:', await fakeFetch30())
     console.log('Fake fetch 30 times Promise.allSettled:',await fakeFetchAllSettled30())
-    //console.log('Fake fetch 30 times for await:',await fakeFetchForAwait30())
+    console.log('Fake fetch 30 times for await:',await fakeFetchForAwait30())
 }
 
 
